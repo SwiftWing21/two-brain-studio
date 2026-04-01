@@ -34,7 +34,6 @@ def create_app() -> Flask:
             return jsonify({"error": "Invalid directory path"}), 400
         try:
             result = engine_manager.load_project(path)
-            _mount_audit_blueprint(app)
             return jsonify(result)
         except Exception as exc:
             return jsonify({"error": str(exc)}), 500
@@ -48,9 +47,10 @@ def create_app() -> Flask:
             return jsonify({"error": "Path required"}), 400
         try:
             result = engine_manager.init_project(path, preset=preset)
-            _mount_audit_blueprint(app)
             return jsonify(result)
         except Exception as exc:
+            import traceback
+            traceback.print_exc()
             return jsonify({"error": str(exc)}), 500
 
     @app.route("/api/project/status")
@@ -242,11 +242,3 @@ def create_app() -> Flask:
     return app
 
 
-def _mount_audit_blueprint(app: Flask) -> None:
-    """Mount the two-brain-audit dashboard blueprint if not already mounted."""
-    if "two_brain_audit" in app.blueprints:
-        return
-    engine = engine_manager.get_engine()
-    if engine:
-        from two_brain_audit.dashboard import create_blueprint
-        app.register_blueprint(create_blueprint(engine), url_prefix="/audit")
