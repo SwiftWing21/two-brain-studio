@@ -54,7 +54,7 @@ def load_project(project_dir: str) -> dict[str, Any]:
     if dim_config and dim_config.get("preset"):
         _register_preset(dim_config["preset"])
 
-    from two_brain_audit.state import add_recent_project
+    from two_brain_studio.state import add_recent_project
     add_recent_project(str(project))
 
     return {
@@ -101,12 +101,32 @@ def init_project(project_dir: str, preset: str | None = None) -> dict[str, Any]:
 
 
 def _register_preset(preset_name: str) -> None:
-    """Register dimensions from a named preset."""
+    """Register dimensions from a named preset.
+
+    Tries multiple import paths since presets may be installed as part of
+    two-brain-audit or available as a standalone presets/ package.
+    """
     if _engine is None:
         return
     try:
-        from presets import PRESETS
-        dims = PRESETS.get(preset_name, [])
-        _engine.register_many(dims)
+        presets_map = None
+        # Try various import paths
+        for module_path in ("two_brain_audit.presets", "presets"):
+            try:
+                import importlib
+                mod = importlib.import_module(module_path)
+                presets_map = getattr(mod, "PRESETS", None)
+                if presets_map:
+                    break
+            except ImportError:
+                continue
+
+        if presets_map is None:
+            log.info("Presets not available — project created without dimensions. Register them via Python API.")
+            return
+
+        dims = presets_map.get(preset_name, [])
+        if dims:
+            _engine.register_many(dims)
     except Exception:
         log.warning("Failed to load preset %s", preset_name, exc_info=True)

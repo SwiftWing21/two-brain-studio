@@ -32,9 +32,12 @@ def create_app() -> Flask:
         path = data.get("path", "")
         if not path or not Path(path).is_dir():
             return jsonify({"error": "Invalid directory path"}), 400
-        result = engine_manager.load_project(path)
-        _mount_audit_blueprint(app)
-        return jsonify(result)
+        try:
+            result = engine_manager.load_project(path)
+            _mount_audit_blueprint(app)
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
 
     @app.route("/api/project/init", methods=["POST"])
     def init_project():
@@ -43,9 +46,12 @@ def create_app() -> Flask:
         preset = data.get("preset")
         if not path:
             return jsonify({"error": "Path required"}), 400
-        result = engine_manager.init_project(path, preset=preset)
-        _mount_audit_blueprint(app)
-        return jsonify(result)
+        try:
+            result = engine_manager.init_project(path, preset=preset)
+            _mount_audit_blueprint(app)
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
 
     @app.route("/api/project/status")
     def project_status():
