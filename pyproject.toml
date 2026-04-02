@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "two-brain-studio"
-version = "0.1.0"
+version = "0.2.0"
 description = "Desktop GUI for two-brain-audit — configure, run, and review audits without the CLI."
 readme = "README.md"
 license = "MIT"
@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "two-brain-audit>=0.1.2",
+    "two-brain-audit>=0.2.0",
     "flask>=3.0",
     "pywebview>=5.0",
 ]
