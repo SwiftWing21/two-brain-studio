@@ -20,6 +20,11 @@ from two_brain_studio.ui import render_studio
 def create_app() -> Flask:
     app = Flask("two_brain_studio")
 
+    # ── Error handlers (JSON, not HTML) ────────────────────────────
+    @app.errorhandler(Exception)
+    def handle_error(exc):
+        return jsonify({"error": str(exc)}), getattr(exc, "code", 500)
+
     # ── Studio UI ────────────────────────────────────────────────────
     @app.route("/")
     def index():
@@ -30,10 +35,13 @@ def create_app() -> Flask:
     def open_project():
         data = request.get_json(force=True)
         path = data.get("path", "")
-        if not path or not Path(path).is_dir():
-            return jsonify({"error": "Invalid directory path"}), 400
+        if not path:
+            return jsonify({"error": "Path required"}), 400
+        resolved = Path(path).resolve()
+        if not resolved.is_dir():
+            return jsonify({"error": "Directory does not exist"}), 400
         try:
-            result = engine_manager.load_project(path)
+            result = engine_manager.load_project(str(resolved))
             return jsonify(result)
         except Exception as exc:
             return jsonify({"error": str(exc)}), 500
@@ -45,12 +53,11 @@ def create_app() -> Flask:
         preset = data.get("preset")
         if not path:
             return jsonify({"error": "Path required"}), 400
+        resolved = Path(path).resolve()
         try:
-            result = engine_manager.init_project(path, preset=preset)
+            result = engine_manager.init_project(str(resolved), preset=preset)
             return jsonify(result)
         except Exception as exc:
-            import traceback
-            traceback.print_exc()
             return jsonify({"error": str(exc)}), 500
 
     @app.route("/api/project/status")
@@ -65,6 +72,11 @@ def create_app() -> Flask:
             "baseline_path": os.path.abspath(engine.baseline_path),
             "dimensions": len(engine.dimensions),
         })
+
+    @app.route("/api/project/close", methods=["POST"])
+    def close_project():
+        engine_manager.unload_project()
+        return jsonify({"ok": True})
 
     @app.route("/api/project/browse", methods=["POST"])
     def browse_folder():
@@ -127,10 +139,14 @@ def create_app() -> Flask:
         engine = engine_manager.get_engine()
         if not engine:
             return jsonify({"error": "No project loaded"}), 400
-        data = request.get_json(force=True)
+        data = request.get_json(silent=True) or {}
+        dimension = data.get("dimension")
+        grade = data.get("grade")
+        if not dimension or not grade:
+            return jsonify({"error": "dimension and grade required"}), 400
         engine.sidecar.set_grade(
-            dimension=data["dimension"],
-            grade=data["grade"],
+            dimension=dimension,
+            grade=grade,
             source=data.get("source", "human"),
             notes=data.get("notes", ""),
         )
@@ -141,16 +157,24 @@ def create_app() -> Flask:
         engine = engine_manager.get_engine()
         if not engine:
             return jsonify({"error": "No project loaded"}), 400
-        data = request.get_json(force=True)
+        data = request.get_json(silent=True) or {}
+        dimension = data.get("dimension")
+        if not dimension:
+            return jsonify({"error": "dimension required"}), 400
         if data.get("remove"):
-            engine.sidecar.remove_ratchet(data["dimension"])
+            engine.sidecar.remove_ratchet(dimension)
         else:
-            engine.sidecar.set_ratchet(data["dimension"], data["grade"])
+            grade = data.get("grade")
+            if not grade:
+                return jsonify({"error": "grade required"}), 400
+            engine.sidecar.set_ratchet(dimension, grade)
         return jsonify({"ok": True})
 
     # ── Run Audit ────────────────────────────────────────────────────
     @app.route("/api/run/<tier>", methods=["POST"])
     def run_audit(tier: str):
+        if tier not in ("light", "medium", "daily", "weekly"):
+            return jsonify({"error": "Invalid tier"}), 400
         engine = engine_manager.get_engine()
         if not engine:
             return jsonify({"error": "No project loaded"}), 400
