@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "two-brain-audit>=0.2.0",
+    "two-brain-audit>=1.0.0",
     "flask>=3.0",
     "pywebview>=5.0",
 ]
