@@ -11,8 +11,6 @@ import urllib.request
 log = logging.getLogger("two_brain_studio")
 
 PORT = 18484
-
-
 _window = None
 
 
@@ -48,7 +46,6 @@ def main() -> None:
     _wait_for_server(url)
 
     global _window
-    # Create native window
     _window = webview.create_window(
         "Two-Brain Studio",
         url,
@@ -59,15 +56,21 @@ def main() -> None:
     )
     _window.expose(select_folder)
 
-    for gui in ("qt", None):
-        try:
-            webview.start(gui=gui)
-            break
-        except Exception as exc:
-            if gui is not None:
-                log.debug("gui=%s failed: %s", gui, exc)
-                continue
-            raise
+    try:
+        for gui in ("qt", None):
+            try:
+                webview.start(gui=gui)
+                break
+            except Exception as exc:
+                if gui is not None:
+                    log.debug("gui=%s failed: %s", gui, exc)
+                    continue
+                raise
+    finally:
+        # Cleanup on window close
+        from two_brain_studio import engine_manager
+        engine_manager.unload_project()
+        log.info("Studio closed")
 
 
 def _wait_for_server(url: str, timeout: int = 10) -> None:

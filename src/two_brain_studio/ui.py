@@ -213,6 +213,9 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
     <div class="nav-item" data-page="export" onclick="showPage('export')">
       <span class="nav-icon">&#8681;</span> Export
     </div>
+    <div class="nav-item" onclick="closeProject()" style="margin-top:auto;">
+      <span class="nav-icon">&#10005;</span> Close Project
+    </div>
   </div>
   <div class="sidebar-footer">
     <div id="sidebar-status">No project loaded</div>
@@ -367,7 +370,12 @@ function el(tag, attrs, children) {
   }
   return e;
 }
-async function api(path,opts){var r=await fetch(path,opts);return r.json();}
+async function api(path,opts){
+  var r=await fetch(path,opts);
+  var data=await r.json();
+  if (!r.ok && data.error) throw new Error(data.error);
+  return data;
+}
 function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'')+' show';clearTimeout(t._t);t._t=setTimeout(function(){t.className='toast';},3000);}
 
 /* ── Navigation ──────────────────────────────────────────────── */
@@ -510,16 +518,19 @@ async function refreshDashboard() {
       tr.appendChild(el('td',{style:{fontFamily:'var(--mono)',fontSize:'12px'}},Math.round((s.auto_confidence||0)*100)+'%'));
       tbody.appendChild(tr);
     });
-  } catch(e) { console.error(e); }
+  } catch(e) { toast('Dashboard error: '+e.message,'error'); }
 }
 
 async function runAudit(tier) {
+  var btns = document.querySelectorAll('.action-bar .btn');
+  btns.forEach(function(b){b.disabled=true;});
   toast('Running '+tier+'...','');
   try {
     await api('/api/run/'+encodeURIComponent(tier),{method:'POST'});
     toast('Completed '+tier+' tier','success');
     refreshDashboard();
   } catch(e) { toast('Failed: '+e.message,'error'); }
+  finally { btns.forEach(function(b){b.disabled=false;}); }
 }
 
 /* ── Dimensions ──────────────────────────────────────────────── */
@@ -606,16 +617,28 @@ async function exportReport(fmt) {
   } catch(e) { toast('Export failed','error'); }
 }
 
+/* ── Close Project ───────────────────────────────────────────── */
+async function closeProject() {
+  try {
+    await api('/api/project/close',{method:'POST'});
+    document.getElementById('sidebar-status').textContent = 'No project loaded';
+    document.getElementById('sidebar-path').textContent = '';
+    showPage('welcome');
+    loadRecents();
+    toast('Project closed','success');
+  } catch(e) { toast('Failed: '+e.message,'error'); }
+}
+
 /* ── Init ────────────────────────────────────────────────────── */
 loadRecents();
 loadPresets();
 
-// Check if project already loaded (e.g., from URL param)
+// Check if project already loaded
 api('/api/project/status').then(function(s) {
   if (s.loaded) {
     updateSidebar(s.path, s.dimensions);
   }
-});
+}).catch(function(){});
 </script>
 </body>
 </html>"""
