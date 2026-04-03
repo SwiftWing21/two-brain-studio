@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from two_brain_studio import state
+from scorerift_studio import state
 
 
 class TestAppConfig:

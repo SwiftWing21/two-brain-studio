@@ -2,7 +2,7 @@
 
 Serves the single-page app shell and API endpoints for project management,
 dimension configuration, baseline editing, and audit execution. The audit
-dashboard itself is mounted from two-brain-audit's blueprint.
+dashboard itself is mounted from scorerift's blueprint.
 """
 
 from __future__ import annotations
@@ -13,12 +13,12 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request
 
-from two_brain_studio import engine_manager
-from two_brain_studio.ui import render_studio
+from scorerift_studio import engine_manager
+from scorerift_studio.ui import render_studio
 
 
 def create_app() -> Flask:
-    app = Flask("two_brain_studio")
+    app = Flask("scorerift_studio")
 
     # ── Error handlers (JSON, not HTML) ────────────────────────────
     @app.errorhandler(Exception)
@@ -87,7 +87,7 @@ def create_app() -> Flask:
     # ── Recent Projects ──────────────────────────────────────────────
     @app.route("/api/recent")
     def recent_projects():
-        from two_brain_studio.state import load_app_config
+        from scorerift_studio.state import load_app_config
         config = load_app_config()
         recents = config.get("recent_projects", [])
         # Validate paths still exist
@@ -256,7 +256,7 @@ def create_app() -> Flask:
         engine = engine_manager.get_engine()
         if not engine:
             return jsonify({"error": "No project loaded"}), 400
-        from two_brain_audit.exporters import export_csv, export_json, export_markdown
+        from scorerift.exporters import export_csv, export_json, export_markdown
         exporters = {"json": export_json, "csv": export_csv, "markdown": export_markdown}
         fn = exporters.get(fmt)
         if not fn:

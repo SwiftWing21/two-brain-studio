@@ -4,13 +4,13 @@ import json
 
 import pytest
 
-from two_brain_studio.server import create_app
+from scorerift_studio.server import create_app
 
 
 @pytest.fixture(autouse=True)
 def _clean_engine():
     """Ensure no project is loaded between tests."""
-    from two_brain_studio import engine_manager
+    from scorerift_studio import engine_manager
     engine_manager.unload_project()
     yield
     engine_manager.unload_project()
@@ -137,4 +137,4 @@ class TestDataEndpoints:
     def test_index_html(self, client):
         resp = client.get("/")
         assert resp.status_code == 200
-        assert b"Two-Brain" in resp.data
+        assert b"ScoreRift" in resp.data

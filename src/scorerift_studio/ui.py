@@ -16,7 +16,7 @@ _HTML = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Two-Brain Studio</title>
+<title>ScoreRift Studio</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -196,7 +196,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
 
 <!-- ── Sidebar ────────────────────────────────────────────────── -->
 <div class="sidebar">
-  <div class="sidebar-brand"><span>Two-Brain</span> Studio</div>
+  <div class="sidebar-brand"><span>Score</span>Rift Studio</div>
   <div class="sidebar-nav">
     <div class="nav-item active" data-page="welcome" onclick="showPage('welcome')">
       <span class="nav-icon">&#9776;</span> Home
@@ -229,7 +229,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
   <!-- Welcome / Home -->
   <div class="page active" id="page-welcome">
     <div class="welcome-hero">
-      <h1><span>Two-Brain</span> Studio</h1>
+      <h1><span>Score</span>Rift Studio</h1>
       <p>Configure, run, and review audits — no CLI required.</p>
     </div>
     <div class="welcome-actions">

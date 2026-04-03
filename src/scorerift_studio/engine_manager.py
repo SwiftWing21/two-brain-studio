@@ -9,7 +9,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
-log = logging.getLogger("two_brain_studio")
+log = logging.getLogger("scorerift_studio")
 
 _engine = None
 _project_path = None
@@ -43,9 +43,9 @@ def unload_project() -> None:
 
 
 def load_project(project_dir: str) -> dict[str, Any]:
-    """Load or initialize a two-brain-audit project in the given directory."""
+    """Load or initialize a scorerift project in the given directory."""
     global _engine, _project_path
-    from two_brain_audit import AuditEngine
+    from scorerift import AuditEngine
 
     with _lock:
         # Close previous project if open
@@ -64,7 +64,7 @@ def load_project(project_dir: str) -> dict[str, Any]:
 
         baseline_exists = (project / "audit_baseline.json").exists()
 
-        config_path = project / ".two-brain-audit.json"
+        config_path = project / ".scorerift.json"
         dim_config = None
         if config_path.exists():
             try:
@@ -75,7 +75,7 @@ def load_project(project_dir: str) -> dict[str, Any]:
         if dim_config and dim_config.get("preset"):
             _register_preset(dim_config["preset"])
 
-    from two_brain_studio.state import add_recent_project
+    from scorerift_studio.state import add_recent_project
     add_recent_project(str(project))
 
     return {
@@ -88,9 +88,9 @@ def load_project(project_dir: str) -> dict[str, Any]:
 
 
 def init_project(project_dir: str, preset: str | None = None) -> dict[str, Any]:
-    """Initialize a new two-brain-audit project."""
+    """Initialize a new scorerift project."""
     global _engine, _project_path
-    from two_brain_audit import AuditEngine
+    from scorerift import AuditEngine
 
     with _lock:
         if _engine is not None and hasattr(_engine, "close"):
@@ -110,14 +110,14 @@ def init_project(project_dir: str, preset: str | None = None) -> dict[str, Any]:
         _project_path = str(project)
 
         config = {"preset": preset, "created": True}
-        (project / ".two-brain-audit.json").write_text(
+        (project / ".scorerift.json").write_text(
             json.dumps(config, indent=2) + "\n", encoding="utf-8"
         )
 
         if preset:
             _register_preset(preset)
 
-    from two_brain_studio.state import add_recent_project
+    from scorerift_studio.state import add_recent_project
     add_recent_project(str(project))
 
     return {
@@ -132,7 +132,7 @@ def _register_preset(preset_name: str) -> None:
     if _engine is None:
         return
     try:
-        mod = importlib.import_module("two_brain_audit.presets")
+        mod = importlib.import_module("scorerift.presets")
         presets_map = getattr(mod, "PRESETS", None)
         if presets_map is None:
             log.info("Presets not available — register dimensions via Python API.")

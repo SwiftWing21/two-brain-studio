@@ -1,6 +1,6 @@
-# Two-Brain Studio
+# ScoreRift Studio
 
-Desktop GUI for [two-brain-audit](https://github.com/SwiftWing21/two-brain-audit) — configure, run, and review audits without touching the CLI.
+Desktop GUI for [scorerift](https://github.com/SwiftWing21/scorerift) — configure, run, and review audits without touching the CLI.
 
 ## What It Does
 
@@ -15,13 +15,13 @@ Desktop GUI for [two-brain-audit](https://github.com/SwiftWing21/two-brain-audit
 ## Install
 
 ```bash
-pip install two-brain-studio
+pip install scorerift-studio
 ```
 
 ## Launch
 
 ```bash
-two-brain-studio
+scorerift-studio
 ```
 
 Or on Windows, double-click `launch.bat` (uses `pythonw.exe` — no console flash).
@@ -33,13 +33,13 @@ Or on Windows, double-click `launch.bat` (uses `pythonw.exe` — no console flas
 ## Requirements
 
 - Python 3.10+
-- [two-brain-audit](https://pypi.org/project/two-brain-audit/) >= 0.1.2
+- [scorerift](https://pypi.org/project/scorerift/) >= 0.1.2
 - Flask >= 3.0
 - PyWebView >= 5.0 (falls back to browser if unavailable)
 
 ## How It Works
 
-Studio is a PyWebView native window hosting a Flask server. The UI is a single-page app with sidebar navigation — all rendering happens client-side via safe DOM construction. The Flask backend wraps `two-brain-audit`'s Python API for project management, dimension configuration, baseline editing, and audit execution.
+Studio is a PyWebView native window hosting a Flask server. The UI is a single-page app with sidebar navigation — all rendering happens client-side via safe DOM construction. The Flask backend wraps `scorerift`'s Python API for project management, dimension configuration, baseline editing, and audit execution.
 
 ```
 ┌─────────────────────────────────────┐
@@ -47,7 +47,7 @@ Studio is a PyWebView native window hosting a Flask server. The UI is a single-p
 │  ┌───────────────────────────────┐  │
 │  │  Flask Server (localhost)     │  │
 │  │  ┌─────────────────────────┐  │  │
-│  │  │  two-brain-audit engine │  │  │
+│  │  │  scorerift engine │  │  │
 │  │  │  (scores, baseline, DB) │  │  │
 │  │  └─────────────────────────┘  │  │
 │  └───────────────────────────────┘  │
@@ -57,10 +57,10 @@ Studio is a PyWebView native window hosting a Flask server. The UI is a single-p
 ## Development
 
 ```bash
-git clone https://github.com/SwiftWing21/two-brain-studio.git
-cd two-brain-studio
+git clone https://github.com/SwiftWing21/scorerift-studio.git
+cd scorerift-studio
 pip install -e ".[dev]"
-python -m two_brain_studio.app
+python -m scorerift_studio.app
 ```
 
 ## License

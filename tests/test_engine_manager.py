@@ -2,7 +2,7 @@
 
 import pytest
 
-from two_brain_studio import engine_manager
+from scorerift_studio import engine_manager
 
 
 class TestEngineManager:
@@ -21,7 +21,7 @@ class TestEngineManager:
         assert engine_manager.get_project_path() is not None
         # Baseline and config created (DB is created lazily on first write)
         assert (proj / "audit_baseline.json").exists()
-        assert (proj / ".two-brain-audit.json").exists()
+        assert (proj / ".scorerift.json").exists()
 
     def test_load_project(self, tmp_path):
         proj = tmp_path / "proj"

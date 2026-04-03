@@ -3,16 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "two-brain-studio"
+name = "scorerift-studio"
 version = "0.2.0"
-description = "Desktop GUI for two-brain-audit — configure, run, and review audits without the CLI."
+description = "Desktop GUI for ScoreRift — configure, run, and review audits without the CLI."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
     { name = "Max" },
 ]
-keywords = ["audit", "gui", "desktop", "code-quality", "two-brain-audit"]
+keywords = ["scoring", "gui", "desktop", "code-quality", "scorerift"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "two-brain-audit>=1.0.0",
+    "scorerift>=2.0.0",
     "flask>=3.0",
     "pywebview>=5.0",
 ]
@@ -34,15 +34,15 @@ dev = [
 ]
 
 [project.scripts]
-two-brain-studio = "two_brain_studio.app:main"
+scorerift-studio = "scorerift_studio.app:main"
 
 [project.urls]
-Homepage = "https://github.com/SwiftWing21/two-brain-studio"
-Repository = "https://github.com/SwiftWing21/two-brain-studio"
-Issues = "https://github.com/SwiftWing21/two-brain-studio/issues"
+Homepage = "https://github.com/SwiftWing21/scorerift-studio"
+Repository = "https://github.com/SwiftWing21/scorerift-studio"
+Issues = "https://github.com/SwiftWing21/scorerift-studio/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/two_brain_studio"]
+packages = ["src/scorerift_studio"]
 
 [tool.ruff]
 target-version = "py310"

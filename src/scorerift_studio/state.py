@@ -7,9 +7,9 @@ import logging
 from pathlib import Path
 from typing import Any
 
-log = logging.getLogger("two_brain_studio")
+log = logging.getLogger("scorerift_studio")
 
-CONFIG_DIR = Path.home() / ".two-brain-studio"
+CONFIG_DIR = Path.home() / ".scorerift-studio"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
 

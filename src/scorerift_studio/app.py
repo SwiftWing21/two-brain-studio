@@ -8,7 +8,7 @@ import threading
 import time
 import urllib.request
 
-log = logging.getLogger("two_brain_studio")
+log = logging.getLogger("scorerift_studio")
 
 PORT = 18484
 _window = None
@@ -25,14 +25,14 @@ def select_folder():
 
 
 def main() -> None:
-    """Launch Two-Brain Studio."""
+    """Launch ScoreRift Studio."""
     try:
         import webview
     except ImportError:
         print("PyWebView required: pip install pywebview", file=sys.stderr)
         sys.exit(1)
 
-    from two_brain_studio.server import create_app
+    from scorerift_studio.server import create_app
 
     app = create_app()
     url = f"http://127.0.0.1:{PORT}/"
@@ -47,7 +47,7 @@ def main() -> None:
 
     global _window
     _window = webview.create_window(
-        "Two-Brain Studio",
+        "ScoreRift Studio",
         url,
         width=1200,
         height=800,
@@ -68,7 +68,7 @@ def main() -> None:
                 raise
     finally:
         # Cleanup on window close
-        from two_brain_studio import engine_manager
+        from scorerift_studio import engine_manager
         engine_manager.unload_project()
         log.info("Studio closed")
 
